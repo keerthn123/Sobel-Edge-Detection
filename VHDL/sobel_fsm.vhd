@@ -44,7 +44,10 @@ architecture rtl of sobel_fsm is
         eof   : std_logic;
     end record;
 
-    constant PIPELINE_STAGES : integer := 3;
+    -- Two registered pipeline stages:
+    -- 1. Sobel gradients
+    -- 2. Magnitude calculation
+    constant PIPELINE_STAGES : integer := 2;
 
     type control_pipe_t is array (0 to PIPELINE_STAGES-1)
         of control_bus_t;
@@ -82,7 +85,6 @@ begin
                 we_math <= '0';
 
                 -- Shift the control pipeline
-                ctrl_pipe(2) <= ctrl_pipe(1);
                 ctrl_pipe(1) <= ctrl_pipe(0);
 
                 -- Clear new pipeline input
@@ -90,8 +92,8 @@ begin
                 ctrl_pipe(0).eof <= '0';
 
                 -- Delayed output signals
-                pixel_valid_out <= ctrl_pipe(2).valid;
-                frame_done <= ctrl_pipe(2).eof;
+                pixel_valid_out <= ctrl_pipe(1).valid;
+                frame_done <= ctrl_pipe(1).eof;
 
 
                 case current_state is
@@ -178,8 +180,8 @@ begin
                             we_win <= '1';
                             we_math <= '1';
 
-                            -- The first two columns do not yet
-                            -- contain a complete 3x3 window.
+                            -- A complete 3x3 window exists
+                            -- starting from column 2.
                             if col_count >= 2 then
                                 ctrl_pipe(0).valid <= '1';
                             end if;
