@@ -15,7 +15,6 @@ G_image = G_image.resize((100, 100))
 G_image.save("../Gray_image_resized.png")
 print("Gray_image_resized.png created successfully!")
 
-
 print('Grayscale Image Size:', G_image.size)
 print('Grayscale Image Mode:', G_image.mode)
 first_pixel = G_image.getpixel((0, 0))
@@ -95,6 +94,13 @@ edges_image = np.clip(magnitude, 0, 255).astype(np.uint8)
 Image.fromarray(edges_image).save("../edges_python.png")
 
 print("edges_python.png created successfully!")
+
+# NORMALIZED IMAGE
+# -----------------------------
+magnitude_normalized = magnitude / magnitude.max() * 255.0
+
+edges_normalized = magnitude_normalized.astype(np.uint8)
+Image.fromarray(edges_normalized).save("../edges_python_normalized.png")
 
 # Save raw Euclidean magnitude values to python_ref.txt
 np.savetxt("../python_ref.txt", magnitude, fmt="%.6f")
